@@ -9,6 +9,7 @@ import ExpansionPanelAction from '@material-ui/core/ExpansionPanelActions';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import IconButton from '@material-ui/core/IconButton';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Delete from '@material-ui/icons/Delete'
 import Edit from '@material-ui/icons/Edit'
 
@@ -41,7 +42,7 @@ function GetItemList() {
   }
   return data.list.map((item) => (
     <ExpansionPanel key={item.id}>
-      <ExpansionPanelSummary>
+      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
       <FormControlLabel
         aria-label="Acknowledge"
         onClick={(event) => event.stopPropagation()}
@@ -60,10 +61,18 @@ function GetItemList() {
   ));
 }
 
+const style = {
+  width: '40%',
+  margin: '0 auto',
+}
+
 export default function() {
   return (
-    <List dense>
+    <React.Fragment>
+    <h1 style={Object.assign({}, style, {'margin-top': '2em'})}>ToDo List</h1>
+    <List dense style={style}>
       {GetItemList()}
     </List>
+    </React.Fragment>
   )
 };
