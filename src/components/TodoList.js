@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import List from '@material-ui/core/List';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -72,15 +73,17 @@ function ItemList() {
   ));
 }
 
-const style = {
-  width: '40%',
-  margin: '0 auto',
-}
-
 export default function() {
+  const isMobile = !useMediaQuery('(min-width:600px)');
+  const style = {
+    width: isMobile ? '360px' : '40%',
+    margin: '0 auto',
+  }
+  const topStyle = Object.assign({marginTop: isMobile ? '0.5em' : '2em'}, style);
+
   return (
     <React.Fragment>
-    <h1 style={Object.assign({}, style, {'marginTop': '2em'})}>ToDo List</h1>
+    <h1 style={Object.assign({}, style, topStyle)}>ToDo List</h1>
     <List dense style={style}>
       <ItemList />
     </List>
