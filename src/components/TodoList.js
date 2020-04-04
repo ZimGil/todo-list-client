@@ -12,7 +12,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Delete from '@material-ui/icons/Delete'
-import Edit from '@material-ui/icons/Edit'
 
 import ItemDetails from './ItemDetails';
 
@@ -63,7 +62,6 @@ function ItemList() {
         label={item.title}      />
       </ExpansionPanelSummary>
       <ExpansionPanelAction onClick={e => e.stopPropagation()} >
-        <IconButton size="small"><Edit /></IconButton>
         <IconButton size="small"><Delete /></IconButton>
       </ExpansionPanelAction>
       <ExpansionPanelDetails onClick={e => e.stopPropagation()}>
