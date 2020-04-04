@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -11,11 +11,11 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Delete from '@material-ui/icons/Delete'
+import DeleteIcon from '@material-ui/icons/Delete'
 
 import ItemDetails from './ItemDetails';
 
-const ITEM_LIST = gql`
+const ITEM_LIST_QUERY = gql`
   {
     list {
       id,
@@ -25,7 +25,7 @@ const ITEM_LIST = gql`
   }
 `;
 
-const TOGGLE_COMPLEATED = gql`
+const TOGGLE_COMPLEATED_MUTATION = gql`
   mutation ToggleCompleated($id: ID!, $isCompleated: Boolean!) {
     setCompleated(id: $id, isCompleated: $isCompleated) {
       id,
@@ -34,16 +34,29 @@ const TOGGLE_COMPLEATED = gql`
   }
 `;
 
+const DELETE_ITEM_MUTATION = gql`
+  mutation DeleteItam($id: ID!) {
+    deleteItem(id: $id) {
+      id,
+      title,
+      isCompleated
+    }
+  }
+`;
+
 function ItemList() {
   const [expanded, setExpanded] = useState({});
-  const { loading, error, data } = useQuery(ITEM_LIST);
-  const [toggleCompleated] = useMutation(TOGGLE_COMPLEATED);
+  const { loading, error, data } = useQuery(ITEM_LIST_QUERY);
+  const [toggleCompleated] = useMutation(TOGGLE_COMPLEATED_MUTATION);
+  const [deleteItemMutation] = useMutation(DELETE_ITEM_MUTATION);
+  const [itemList, setItemList] = useState([]);
+  useMemo(() => data && setItemList(data.list), [data]);
   if (loading) return <p>Loading...</p>;
   if (error) {
     console.log(error)
     return <p>Error :(</p>;
   }
-  return data.list.map((item) => (
+  return itemList.map((item) => (
     <ExpansionPanel
       key={item.id}
       onClick={() => {
@@ -62,13 +75,18 @@ function ItemList() {
         label={item.title}      />
       </ExpansionPanelSummary>
       <ExpansionPanelAction onClick={e => e.stopPropagation()} >
-        <IconButton size="small"><Delete /></IconButton>
+        <IconButton onClick={() => deleteItem(item.id)} size="small"><DeleteIcon /></IconButton>
       </ExpansionPanelAction>
       <ExpansionPanelDetails onClick={e => e.stopPropagation()}>
         {expanded[item.id] && <ItemDetails id={item.id} />}
       </ExpansionPanelDetails>
     </ExpansionPanel>
   ));
+
+  function deleteItem(id) {
+    deleteItemMutation({variables: {id}})
+      .then(({data}) => (console.log(data),setItemList(data.deleteItem)));
+  }
 }
 
 export default function() {
