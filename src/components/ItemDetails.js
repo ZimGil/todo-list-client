@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -17,12 +17,23 @@ const ITEM_QUERY = gql`
   }
 `;
 
+const EDIT_MUTATION = gql`
+  mutation EditItem($id: ID!, $deadline: String, $description: String) {
+    editItem(id: $id, deadline: $deadline, description: $description) {
+      id,
+      deadline,
+      description
+    }
+  }
+`;
+
 
 export default function(props) {
-  const { loading, error, data } = useQuery(ITEM_QUERY, {variables: props});
   const [deadline, setDeadline] = useState();
   const [description, setDescription] = useState();
   const [initialData, setInitialData] = useState();
+  const { loading, error, data } = useQuery(ITEM_QUERY, {variables: props});
+  const [editItem] = useMutation(EDIT_MUTATION);
   useMemo(() => {
     if (data) {
       setDeadline(data.item.deadline);
@@ -65,6 +76,7 @@ export default function(props) {
             color="primary"
             disabled={!isSaveable()}
             startIcon={<SaveIcon />}
+            onClick={saveEdit}
             style={{marginRight: '5px'}}>
               Save
             </Button>
@@ -88,5 +100,10 @@ export default function(props) {
   function reserState() {
     setDeadline(initialData.deadline);
     setDescription(initialData.description);
+  }
+
+  function saveEdit() {
+    const variables = Object.assign({deadline, description}, props);
+    editItem({variables});
   }
 }
