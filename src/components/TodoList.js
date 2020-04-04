@@ -85,7 +85,7 @@ function ItemList() {
 
   function deleteItem(id) {
     deleteItemMutation({variables: {id}})
-      .then(({data}) => (console.log(data),setItemList(data.deleteItem)));
+      .then(({data}) => setItemList(data.deleteItem));
   }
 }
 
