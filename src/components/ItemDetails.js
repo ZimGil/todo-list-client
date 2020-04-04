@@ -104,6 +104,7 @@ export default function(props) {
 
   function saveEdit() {
     const variables = Object.assign({deadline, description}, props);
-    editItem({variables});
+    editItem({variables})
+      .then(({data}) => setInitialData(data.editItem));
   }
 }
