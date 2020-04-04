@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import List from '@material-ui/core/List';
@@ -12,6 +12,8 @@ import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Delete from '@material-ui/icons/Delete'
 import Edit from '@material-ui/icons/Edit'
+
+import ItemDetails from './ItemDetails';
 
 const ITEM_LIST = gql`
   {
@@ -32,7 +34,8 @@ const TOGGLE_COMPLEATED = gql`
   }
 `;
 
-function GetItemList() {
+function ItemList() {
+  const [expanded, setExpanded] = useState({});
   const { loading, error, data } = useQuery(ITEM_LIST);
   const [toggleCompleated] = useMutation(TOGGLE_COMPLEATED);
   if (loading) return <p>Loading...</p>;
@@ -41,7 +44,13 @@ function GetItemList() {
     return <p>Error :(</p>;
   }
   return data.list.map((item) => (
-    <ExpansionPanel key={item.id}>
+    <ExpansionPanel
+      key={item.id}
+      onClick={() => {
+        const newExpanded = Object.assign({}, expanded);
+        newExpanded[item.id] = true;
+        setExpanded(newExpanded);
+      }}>
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
       <FormControlLabel
         aria-label="Acknowledge"
@@ -56,7 +65,9 @@ function GetItemList() {
         <IconButton size="small"><Edit /></IconButton>
         <IconButton size="small"><Delete /></IconButton>
       </ExpansionPanelAction>
-      <ExpansionPanelDetails>GGWP</ExpansionPanelDetails>
+      <ExpansionPanelDetails onClick={e => e.stopPropagation()}>
+        {expanded[item.id] && <ItemDetails id={item.id} />}
+      </ExpansionPanelDetails>
     </ExpansionPanel>
   ));
 }
@@ -69,9 +80,9 @@ const style = {
 export default function() {
   return (
     <React.Fragment>
-    <h1 style={Object.assign({}, style, {'margin-top': '2em'})}>ToDo List</h1>
+    <h1 style={Object.assign({}, style, {'marginTop': '2em'})}>ToDo List</h1>
     <List dense style={style}>
-      {GetItemList()}
+      <ItemList />
     </List>
     </React.Fragment>
   )
