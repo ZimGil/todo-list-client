@@ -1,7 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import SaveIcon from '@material-ui/icons/Save';
 import { DateTimePicker } from '@material-ui/pickers';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
@@ -20,10 +22,12 @@ export default function(props) {
   const { loading, error, data } = useQuery(ITEM_QUERY, {variables: props});
   const [deadline, setDeadline] = useState();
   const [description, setDescription] = useState();
+  const [initialData, setInitialData] = useState();
   useMemo(() => {
     if (data) {
       setDeadline(data.item.deadline);
       setDescription(data.item.description);
+      setInitialData(data.item);
     }
   }, [data]);
 
@@ -42,10 +46,9 @@ export default function(props) {
             inputVariant="outlined"
             ampm={false}
             value={deadline}
-            onChange={setDeadline}
+            onChange={(v) => setDeadline(new Date(v).toISOString())}
             label="Deadline" />
         </div>
-        <div>
           <TextField
             type="text"
             style={{width: '100%'}}
@@ -56,8 +59,34 @@ export default function(props) {
             label="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)} />
+        <div style={{marginTop: '0.5em'}}>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={!isSaveable()}
+            startIcon={<SaveIcon />}
+            style={{marginRight: '5px'}}>
+              Save
+            </Button>
+          <Button
+            variant="contained"
+            disableElevation
+            onClick={reserState}>
+              Clear
+          </Button>
         </div>
       </form>
       </MuiPickersUtilsProvider>
   );
+
+  function isSaveable() {
+    return initialData
+      && (initialData.description !== description
+      || initialData.deadline !== deadline);
+  }
+
+  function reserState() {
+    setDeadline(initialData.deadline);
+    setDescription(initialData.description);
+  }
 }
