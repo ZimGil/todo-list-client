@@ -6,8 +6,6 @@ import { DateTimePicker } from '@material-ui/pickers';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
 
-
-
 const ITEM_QUERY = gql`
   query GetItem($id: ID!) {
     item(id: $id) {
@@ -37,7 +35,7 @@ export default function(props) {
 
   return (
     <MuiPickersUtilsProvider utils={MomentUtils}>
-      <form noValidate autoComplete="off">
+      <form noValidate autoComplete="off" style={{width: '100%'}}>
         <div style={{marginBottom: '15px'}}>
           <DateTimePicker
             autoOk
@@ -50,7 +48,7 @@ export default function(props) {
         <div>
           <TextField
             type="text"
-            fullWidth
+            style={{width: '100%'}}
             id="outlined-multiline-static"
             rows="4"
             multiline
