@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -21,10 +21,7 @@ export default function(props) {
   const [toggleCompleated] = useMutation(TOGGLE_COMPLEATED_MUTATION);
   const [deleteItemMutation] = useMutation(DELETE_ITEM_MUTATION);
   useMemo(() => data && setItemList(data.list), [data]);
-  const updateList = useCallback(() => {
-    setItemList(itemList.concat(props.latestItem))
-  }, [itemList, props.latestItem]);
-  useMemo(() => props.latestItem && updateList(), [props.latestItem, updateList]);
+  useMemo(() => props.latestItem && setItemList(itemList.concat(props.latestItem)), [props.latestItem]);
   if (loading) return <p>Loading...</p>;
   if (error) {
     console.log(error)
