@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import SaveIcon from '@material-ui/icons/Save';
@@ -8,25 +7,8 @@ import { DateTimePicker } from '@material-ui/pickers';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
 
-const ITEM_QUERY = gql`
-  query GetItem($id: ID!) {
-    item(id: $id) {
-      description,
-      deadline,
-    }
-  }
-`;
-
-const EDIT_MUTATION = gql`
-  mutation EditItem($id: ID!, $deadline: String, $description: String) {
-    editItem(id: $id, deadline: $deadline, description: $description) {
-      id,
-      deadline,
-      description
-    }
-  }
-`;
-
+import { ITEM_QUERY } from '../gql/queries';
+import { EDIT_MUTATION } from '../gql/mutations';
 
 export default function(props) {
   const [deadline, setDeadline] = useState();
@@ -61,7 +43,6 @@ export default function(props) {
             label="Deadline" />
         </div>
           <TextField
-            type="text"
             style={{width: '100%'}}
             id="outlined-multiline-static"
             rows="4"
